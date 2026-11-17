@@ -1,0 +1,25 @@
+{
+	"schemaVersion": 1,
+	"id": "enchantxp",
+	"version": "${version}",
+	"name": "EnchantXP",
+	"description": "Стол зачарований берёт фиксированное количество очков опыта вместо уровней (1/2/3 уровня = 100/200/300 очков по умолчанию).",
+	"authors": [
+		"deaefer"
+	],
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"enchantxp.EnchantXp"
+		]
+	},
+	"mixins": [
+		"enchantxp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "${minecraft_dep}",
+		"java": ">=25"
+	}
+}
