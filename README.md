@@ -33,6 +33,10 @@ Two injections into `Player.onEnchantmentPerformed`:
 
 The enchantment seed advance stays vanilla — the injection does not cancel anything.
 
+The rebuild is silent: `giveExperiencePoints` walks the level up one at a time and the vanilla code plays the
+"level up" sound on every level divisible by five, so the mixin moves `lastLevelUpTime` forward before the
+rebuild. Without that line every enchantment played the level-up chime.
+
 The level requirement on the buttons (8 / 16 / 30) is untouched: it is a separate value (`costs[i]`) and it is
 what the GUI shows.
 
