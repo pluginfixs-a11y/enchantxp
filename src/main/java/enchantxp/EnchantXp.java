@@ -27,6 +27,7 @@ public class EnchantXp implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModConfig c = config();
-		LOGGER.info("EnchantXP: цена в очках опыта {} (кнопки 1/2/3)", Arrays.toString(c.price_points));
+		LOGGER.info("EnchantXP: цена в очках опыта {} без полок, линейно до {} при {} полках и более (кнопки 1/2/3)",
+				Arrays.toString(c.price_points_weak), Arrays.toString(c.price_points), c.full_bookshelves);
 	}
 }

@@ -1,7 +1,7 @@
 # EnchantXP
 
-Server-side Fabric mod for Minecraft **26.2**. The enchanting table charges a fixed amount of experience
-**points** instead of levels. Vanilla clients need nothing installed.
+Server-side Fabric mod for Minecraft **26.2**. The enchanting table charges experience **points**
+instead of levels. Vanilla clients need nothing installed.
 
 ## The problem
 
@@ -23,13 +23,25 @@ So the third button always costs **3 levels**, and the higher your level the mor
 
 ## What the mod does
 
+The price scales with the working bookshelves, counted the same way vanilla does it
+(`EnchantingTableBlock.isValidBookShelf`, vanilla caps the power at 15 shelves). A table with no
+shelves costs **10 / 20 / 30** points, and the price grows linearly with every shelf up to
+**100 / 200 / 300** at 15+ shelves (≈ +6 / +12 / +18 points per shelf; 15 is the cap, a table with
+more shelves pays the full price). The shelves are counted where vanilla computes the offers
+(`slotsChanged`), so the price always matches the enchantment the player is looking at.
+`EnchantmentMenuMixin` hands that number to the player at the click, and the click is refused when
+the player has fewer points than the price. Creative (`hasInfiniteMaterials`) skips that check, like
+it skips the level and lapis checks in vanilla — though vanilla creative still drains the levels it
+charges.
+
 Two injections into `Player.onEnchantmentPerformed`:
 
-1. `HEAD` — remembers `totalExperience`.
+1. `HEAD` — remembers `totalExperience` and the scoreboard `Score`.
 2. `TAIL` — vanilla has already removed the levels, so the state is rebuilt from `before - price`:
    `totalExperience = 0; experienceLevel = 0; experienceProgress = 0; giveExperiencePoints(target)`.
    `giveExperiencePoints` expands level and progress from total XP exactly (the `while (progress >= 1)` loop
-   converges to the state matching `totalExperience`).
+   converges to the state matching `totalExperience`). It also adds the given points to the player's
+   score, so the score is put back to the remembered value — vanilla enchanting never touches it.
 
 The enchantment seed advance stays vanilla — the injection does not cancel anything.
 
@@ -45,12 +57,17 @@ what the GUI shows.
 `config/enchantxp.json`, read once at startup:
 
 ```json
-{ "price_points": [100, 200, 300] }
+{
+  "price_points": [100, 200, 300],
+  "price_points_weak": [10, 20, 30],
+  "full_bookshelves": 15
+}
 ```
 
 Index 0 is the first button (1 level in vanilla), 1 the second (2 levels), 2 the third (3 levels).
-Defaults are what 1/2/3 levels cost at level 30, so nothing changes at level 30 and everything above it gets
-cheaper.
+`price_points_weak` is the price at a table with no shelves, `price_points` the price at
+`full_bookshelves` shelves, and everything in between is linear. Old configs without the new keys
+get the defaults for them.
 
 ## Install
 
